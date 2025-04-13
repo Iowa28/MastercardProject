@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog logicalFilePath="db.changelog-master.xml" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="13.1600" author="naminov">
+        <createTable tableName="ACCOUNT">
+            <column name="ACCOUNT_ID" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="EMAIL" type="varchar(36)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PASSWORD" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ROLE" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATE_TIME" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CHANGE_TIME" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FINISH_TIME" type="timestamp"/>
+        </createTable>
+        <addUniqueConstraint columnNames="EMAIL"
+                             tableName="ACCOUNT"/>
+    </changeSet>
+
+</databaseChangeLog>
