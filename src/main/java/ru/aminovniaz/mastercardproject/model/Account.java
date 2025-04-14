@@ -1,12 +1,15 @@
 package ru.aminovniaz.mastercardproject.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
-import java.time.LocalTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "ACCOUNT")
+@Data
 public class Account {
+
     @Id
     @Column(name = "ACCOUNT_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,14 +26,14 @@ public class Account {
     private Role role;
 
     @Column(name = "CREATE_TIME", nullable = false)
-    private LocalTime createTime;
+    private Date createTime;
 
     @Version
     @Column(name = "CHANGE_TIME", nullable = false)
-    private LocalTime changeTime;
+    private Date changeTime;
 
     @Column(name = "FINISH_TIME")
-    private LocalTime finishTime;
+    private Date finishTime;
 
     public enum Role {
         USER, ADMIN
