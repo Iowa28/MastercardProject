@@ -13,6 +13,7 @@ import ru.aminovniaz.mastercardproject.service.AccountService;
 import java.util.List;
 
 @RestController
+//@RequestMapping("/admin")
 @Tag(
         name = "Аккаунты",
         description = "Методы работы с аккаунтами"
@@ -22,15 +23,21 @@ public class AccountController {
     @Autowired
     private AccountService accountService;
 
-    @RequestMapping(value = "accounts", method = RequestMethod.GET)
+    @RequestMapping(value = "admin/accounts", method = RequestMethod.GET)
     @Operation(summary = "Список аккаунтов")
     public List<AccountDto> getAccounts() {
         return accountService.getAccounts();
     }
 
-    @RequestMapping(value = "account/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "admin/account/{id}", method = RequestMethod.GET)
     @Operation(summary = "Получение аккаунта по идентификатору")
     public AccountDto getAccount(@PathVariable Long id) {
         return accountService.getAccount(id);
+    }
+
+    @RequestMapping(value = "example", method = RequestMethod.GET)
+    @Operation(summary = "Доступен только авторизованным пользователям")
+    public String example() {
+        return "Hello, world!";
     }
 }
