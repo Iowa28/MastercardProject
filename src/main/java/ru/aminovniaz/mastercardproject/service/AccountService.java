@@ -13,8 +13,6 @@ public interface AccountService {
 
     AccountDto getAccount(long accountId);
 
-    Account getAccountById(long accountId);
-
     Account getAccountByEmail(String email);
 
     void saveAccount(Account accountDto);
@@ -23,5 +21,7 @@ public interface AccountService {
 
     UserDetailsService userDetailsService();
 
-    AccountDetails getCurrentAccount();
+    void updateAccount(Long id, AccountDto accountDto);
+
+    void deleteAccount(Long id);
 }

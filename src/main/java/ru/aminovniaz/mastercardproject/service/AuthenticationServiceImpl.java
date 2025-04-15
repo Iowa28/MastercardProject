@@ -3,13 +3,11 @@ package ru.aminovniaz.mastercardproject.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.aminovniaz.mastercardproject.dto.AccountDto;
 import ru.aminovniaz.mastercardproject.dto.JwtAuthenticationResponse;
 import ru.aminovniaz.mastercardproject.model.Account;
-import ru.aminovniaz.mastercardproject.model.AccountDetails;
 
 import java.util.Date;
 
@@ -50,10 +48,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 accountDto.getEmail(),
                 accountDto.getPassword()
         ));
-
-//        UserDetails user = accountService
-//                .userDetailsService()
-//                .loadUserByUsername(accountDto.getEmail());
 
         Account account = accountService.getAccountByEmail(accountDto.getEmail());
 

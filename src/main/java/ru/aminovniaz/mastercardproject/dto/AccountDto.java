@@ -24,6 +24,8 @@ public class AccountDto {
     @Size(max = 64, message = "Длина пароля должна быть не более 64 символов")
     private String password;
 
+    private String encodedPassword;
+
     @Schema(description = "Роль аккаунта")
     private String role;
 

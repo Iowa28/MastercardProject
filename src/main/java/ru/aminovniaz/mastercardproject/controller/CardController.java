@@ -1,15 +1,16 @@
 package ru.aminovniaz.mastercardproject.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import ru.aminovniaz.mastercardproject.dto.CardDto;
 
 @RestController
 public class CardController {
 
-//    @RequestMapping(value = "test", method = RequestMethod.GET)
-//    public CardDto test() {
-//        return CardDto.builder().id(123L).number("123").build();
-//    }
+    @RequestMapping(value = "example", method = RequestMethod.GET)
+    @Operation(summary = "Доступен только авторизованным пользователям")
+    public String example() {
+        return "Hello, world!";
+    }
 }
