@@ -1,14 +1,13 @@
 package ru.aminovniaz.mastercardproject.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.aminovniaz.mastercardproject.dto.AccountDto;
 import ru.aminovniaz.mastercardproject.dto.AccountMapper;
+import ru.aminovniaz.mastercardproject.exception.EntityExistsException;
+import ru.aminovniaz.mastercardproject.exception.NotFoundException;
 import ru.aminovniaz.mastercardproject.model.Account;
 import ru.aminovniaz.mastercardproject.model.AccountDetails;
 import ru.aminovniaz.mastercardproject.repository.AccountRepository;
@@ -37,21 +36,20 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account getAccountById(long accountId) {
-        // TODO: Заменить на свои исключения
-        return accountRepository.findById(accountId).orElseThrow();
+        return accountRepository.findById(accountId)
+                .orElseThrow(() -> new NotFoundException("Аккаунт c данным идентификатором не найден."));
     }
 
     @Override
     public Account getAccountByEmail(String email) {
-        // TODO: Заменить на свои исключения
-        return accountRepository.findByEmail(email).orElseThrow();
+        return accountRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Аккаунт c данной почтой не найден."));
     }
 
     @Override
     public void saveAccount(Account account) {
         if (accountRepository.existsByEmail(account.getEmail())) {
-            // TODO: Заменить на свои исключения
-            throw new IllegalStateException("Пользователь с таким email уже существует");
+            throw new EntityExistsException("Пользователь с таким email уже существует");
         }
 
         accountRepository.save(account);
