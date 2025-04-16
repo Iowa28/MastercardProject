@@ -56,4 +56,28 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="16.2032" author="naminov">
+        <createTable tableName="CARD_LIMIT">
+            <column name="CARD_LIMIT_ID" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="CARD_ID" type="bigint">
+                <constraints references="CARD(CARD_ID)"
+                             foreignKeyName="CardLimit_Card"/>
+            </column>
+            <column name="TYPE" type="varchar(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="WITHDRAW_LIMIT" type="float"/>
+            <column name="REMNANT" type="float"/>
+            <column name="CREATE_TIME" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CHANGE_TIME" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FINISH_TIME" type="timestamp"/>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>

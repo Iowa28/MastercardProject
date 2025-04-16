@@ -3,7 +3,7 @@ package ru.aminovniaz.mastercardproject.service;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import ru.aminovniaz.mastercardproject.dto.AccountDto;
 import ru.aminovniaz.mastercardproject.model.Account;
-import ru.aminovniaz.mastercardproject.model.AccountDetails;
+import ru.aminovniaz.mastercardproject.security.AccountDetails;
 
 import java.util.List;
 

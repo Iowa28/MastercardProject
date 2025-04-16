@@ -17,6 +17,10 @@ public interface CardService {
 
     List<CardDto> getAllCards(CardFilter filter);
 
+    void addLimit(Long cardId, String type, Float limit);
+
+    void deleteLimit(Long cardId, String type);
+
     void blockUserCard(Long cardId);
 
     List<CardDto> getUserCards(CardFilter filter);

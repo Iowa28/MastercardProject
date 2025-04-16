@@ -9,7 +9,7 @@ import ru.aminovniaz.mastercardproject.mapper.AccountMapper;
 import ru.aminovniaz.mastercardproject.exception.EntityExistsException;
 import ru.aminovniaz.mastercardproject.exception.NotFoundException;
 import ru.aminovniaz.mastercardproject.model.Account;
-import ru.aminovniaz.mastercardproject.model.AccountDetails;
+import ru.aminovniaz.mastercardproject.security.AccountDetails;
 import ru.aminovniaz.mastercardproject.repository.AccountRepository;
 
 import java.util.Date;

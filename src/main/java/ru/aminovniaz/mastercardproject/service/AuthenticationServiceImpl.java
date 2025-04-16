@@ -6,7 +6,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.aminovniaz.mastercardproject.dto.AccountDto;
-import ru.aminovniaz.mastercardproject.dto.JwtAuthenticationResponse;
+import ru.aminovniaz.mastercardproject.security.JwtAuthenticationResponse;
 import ru.aminovniaz.mastercardproject.model.Account;
 
 import java.util.Date;

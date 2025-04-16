@@ -38,6 +38,7 @@ public class CardDaoImpl implements CardDao {
         if (Objects.nonNull(filter.getOwnerId())) {
             predicates.add(cb.equal(stand.get("owner").get("id"), filter.getOwnerId()));
         }
+        predicates.add(cb.isNull(stand.get("finishTime")));
 
         cq.select(stand).where(predicates.toArray(new Predicate[0]));
 

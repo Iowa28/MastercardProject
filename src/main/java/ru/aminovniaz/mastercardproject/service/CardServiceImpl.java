@@ -9,10 +9,13 @@ import org.springframework.stereotype.Service;
 import ru.aminovniaz.mastercardproject.dao.CardDao;
 import ru.aminovniaz.mastercardproject.dto.CardDto;
 import ru.aminovniaz.mastercardproject.dto.CardFilter;
+import ru.aminovniaz.mastercardproject.exception.EntityExistsException;
 import ru.aminovniaz.mastercardproject.exception.NotFoundException;
 import ru.aminovniaz.mastercardproject.mapper.CardMapper;
 import ru.aminovniaz.mastercardproject.model.Account;
-import ru.aminovniaz.mastercardproject.model.AccountDetails;
+import ru.aminovniaz.mastercardproject.model.CardLimit;
+import ru.aminovniaz.mastercardproject.repository.CardLimitRepository;
+import ru.aminovniaz.mastercardproject.security.AccountDetails;
 import ru.aminovniaz.mastercardproject.model.Card;
 import ru.aminovniaz.mastercardproject.repository.CardRepository;
 
@@ -37,6 +40,8 @@ public class CardServiceImpl implements CardService {
 
     @Autowired
     private CardDao cardDao;
+    @Autowired
+    private CardLimitRepository cardLimitRepository;
 
     @Override
     public void createOrUpdateCard(CardDto cardDto) {
@@ -97,13 +102,37 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
+    public void addLimit(Long cardId, String type, Float limit) {
+        CardLimit.Type limitType = CardLimit.Type.valueOf(type);
+        if (cardLimitRepository.existsByCardIdAndTypeAndFinishTimeIsNull(cardId, limitType)) {
+            throw new EntityExistsException("На карту уже установлен лимит с данным типом.");
+        }
+
+        CardLimit cardLimit = new CardLimit();
+        Card card = getCardById(cardId);
+        cardLimit.setCard(card);
+        cardLimit.setType(limitType);
+        cardLimit.setWithdrawLimit(limit);
+        cardLimit.setRemnant(limit);
+        cardLimit.setCreateTime(new Date());
+        cardLimitRepository.save(cardLimit);
+    }
+
+    @Override
+    public void deleteLimit(Long cardId, String type) {
+        CardLimit cardLimit = cardLimitRepository.findByCardIdAndTypeAndFinishTimeIsNull(cardId, CardLimit.Type.valueOf(type))
+                .orElseThrow(() -> new NotFoundException("У карты отсутсвует лимит с данным типом."));
+        cardLimit.setFinishTime(new Date());
+        cardLimitRepository.save(cardLimit);
+    }
+
+    @Override
     public void blockUserCard(Long cardId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         AccountDetails accountDetails = (AccountDetails) authentication.getPrincipal();
         Account account = accountDetails.getAccount();
 
         Card card = getCardById(cardId);
-        //if (!card.getOwner().getId().equals(account.getId()) && account.getRole() == Account.Role.USER) {
         if (!card.getOwner().getId().equals(account.getId())) {
             throw new AccessDeniedException("Вы не являетесь владельцем карты.");
         }

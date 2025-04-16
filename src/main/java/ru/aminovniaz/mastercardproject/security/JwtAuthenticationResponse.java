@@ -1,4 +1,4 @@
-package ru.aminovniaz.mastercardproject.dto;
+package ru.aminovniaz.mastercardproject.security;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

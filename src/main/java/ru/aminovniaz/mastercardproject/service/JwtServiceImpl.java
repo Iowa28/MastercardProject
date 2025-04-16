@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import ru.aminovniaz.mastercardproject.model.Account;
-import ru.aminovniaz.mastercardproject.model.AccountDetails;
 
 import java.security.Key;
 import java.util.Date;

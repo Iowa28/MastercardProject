@@ -34,19 +34,19 @@ public class CardController {
 
     @RequestMapping(value = "admin/card/{id}", method = RequestMethod.DELETE)
     @Operation(summary = "Удаление карты", description = "Удаление карты по идентификатору")
-    public void deleteCard(@PathVariable long id) {
+    public void deleteCard(@PathVariable Long id) {
         cardService.deleteCard(id);
     }
 
     @RequestMapping(value = "admin/card/{id}/block", method = RequestMethod.POST)
     @Operation(summary = "Блокировка карты", description = "Блокировка карты по идентификатору")
-    public void blockCard(@PathVariable long id) {
+    public void blockCard(@PathVariable Long id) {
         cardService.blockCard(id);
     }
 
     @RequestMapping(value = "admin/card/{id}/activate", method = RequestMethod.POST)
     @Operation(summary = "Активация карты", description = "Активация карты по идентификатору")
-    public void activateCard(@PathVariable long id) {
+    public void activateCard(@PathVariable Long id) {
         cardService.activateCard(id);
     }
 
@@ -68,9 +68,21 @@ public class CardController {
         return cardService.getAllCards(filter);
     }
 
+    @RequestMapping(value = "admin/card/{id}/limit", method = RequestMethod.POST)
+    @Operation(summary = "Установка лимита", description = "Установка лимита на снятие средств с карты")
+    public void addLimit(@PathVariable Long id, @RequestParam String type, @RequestParam Float limit) {
+        cardService.addLimit(id, type, limit);
+    }
+
+    @RequestMapping(value = "admin/card/{id}/limit", method = RequestMethod.DELETE)
+    @Operation(summary = "Отмена лимита", description = "Отмена лимита на снятие средств с карты")
+    public void deleteLimit(@PathVariable Long id, @RequestParam String type) {
+        cardService.deleteLimit(id, type);
+    }
+
     @RequestMapping(value = "card/{id}/block", method = RequestMethod.POST)
     @Operation(summary = "Блокировка карты пользователя", description = "Блокировка карты пользователя по идентификатору")
-    public void blockUserCard(@PathVariable long id) {
+    public void blockUserCard(@PathVariable Long id) {
         cardService.blockUserCard(id);
     }
 
