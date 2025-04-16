@@ -35,7 +35,7 @@ public class ExceptionController {
     }
 
     @ExceptionHandler({ConstraintViolationException.class, MethodValidationException.class, MethodArgumentNotValidException.class})
-    public ResponseEntity<ErrorMessage> constraintViolationException(Exception exception) {
+    public ResponseEntity<ErrorMessage> validationException(Exception exception) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorMessage(exception.getMessage()));

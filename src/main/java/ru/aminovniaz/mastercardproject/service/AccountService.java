@@ -15,6 +15,8 @@ public interface AccountService {
 
     Account getAccountByEmail(String email);
 
+    Account getAccountById(long accountId);
+
     void saveAccount(Account accountDto);
 
     AccountDetails getAccountDetails(String email);

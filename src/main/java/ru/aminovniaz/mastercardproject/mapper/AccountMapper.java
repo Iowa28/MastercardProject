@@ -1,6 +1,7 @@
-package ru.aminovniaz.mastercardproject.dto;
+package ru.aminovniaz.mastercardproject.mapper;
 
 import org.mapstruct.Mapper;
+import ru.aminovniaz.mastercardproject.dto.AccountDto;
 import ru.aminovniaz.mastercardproject.model.Account;
 
 import java.util.List;
@@ -11,6 +12,4 @@ public interface AccountMapper {
     AccountDto accountToAccountDto(Account account);
 
     List<AccountDto> accountsToAccountDtos(List<Account> accounts);
-
-    Account accountDtoToAccount(AccountDto accountDto);
 }

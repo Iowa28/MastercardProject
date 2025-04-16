@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import ru.aminovniaz.mastercardproject.dto.AccountDto;
-import ru.aminovniaz.mastercardproject.dto.AccountMapper;
+import ru.aminovniaz.mastercardproject.mapper.AccountMapper;
 import ru.aminovniaz.mastercardproject.exception.EntityExistsException;
 import ru.aminovniaz.mastercardproject.exception.NotFoundException;
 import ru.aminovniaz.mastercardproject.model.Account;
@@ -43,9 +43,15 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public Account getAccountById(long accountId) {
+        return accountRepository.findById(accountId)
+                .orElseThrow(() -> new NotFoundException("Аккаунт c данным идентификатором не найден."));
+    }
+
+    @Override
     public void saveAccount(Account account) {
         if (accountRepository.existsByEmail(account.getEmail())) {
-            throw new EntityExistsException("Пользователь с таким email уже существует.");
+            throw new EntityExistsException("Аккаунт c данной почтой уже существует.");
         }
 
         accountRepository.save(account);
@@ -65,21 +71,19 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void createOrUpdateAccount(AccountDto accountDto) {
         Account account;
-        if (Objects.isNull(accountDto.getId()))
-        {
+        if (Objects.isNull(accountDto.getId())) {
             if (accountRepository.existsByEmail(accountDto.getEmail())) {
-                throw new EntityExistsException("Пользователь с таким email уже существует.");
+                throw new EntityExistsException("Аккаунт c данной почтой уже существует.");
             }
 
             account = new Account();
             account.setRole(Account.Role.USER);
             account.setCreateTime(new Date());
         }
-        else
-        {
+        else {
             account = getAccountById(accountDto.getId());
             if (!StringUtils.equals(account.getEmail(), accountDto.getEmail()) && accountRepository.existsByEmail(accountDto.getEmail())) {
-                throw new EntityExistsException("Пользователь с таким email уже существует.");
+                throw new EntityExistsException("Аккаунт c данной почтой уже существует.");
             }
         }
 
@@ -96,10 +100,5 @@ public class AccountServiceImpl implements AccountService {
         Account account = getAccountById(id);
         account.setFinishTime(new Date());
         accountRepository.save(account);
-    }
-
-    private Account getAccountById(long accountId) {
-        return accountRepository.findById(accountId)
-                .orElseThrow(() -> new NotFoundException("Аккаунт c данным идентификатором не найден."));
     }
 }

@@ -26,7 +26,7 @@ public class Card {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ACCOUNT_ID", nullable = false)
-    private Account account;
+    private Account owner;
 
     @Column(name = "ACTIVE_DAYS")
     private Integer activeDays;
