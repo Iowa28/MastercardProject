@@ -14,6 +14,7 @@ import ru.aminovniaz.mastercardproject.repository.AccountRepository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -44,7 +45,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void saveAccount(Account account) {
         if (accountRepository.existsByEmail(account.getEmail())) {
-            throw new EntityExistsException("Пользователь с таким email уже существует");
+            throw new EntityExistsException("Пользователь с таким email уже существует.");
         }
 
         accountRepository.save(account);
@@ -62,8 +63,26 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void updateAccount(Long id, AccountDto accountDto) {
-        Account account = getAccountById(id);
+    public void createOrUpdateAccount(AccountDto accountDto) {
+        Account account;
+        if (Objects.isNull(accountDto.getId()))
+        {
+            if (accountRepository.existsByEmail(accountDto.getEmail())) {
+                throw new EntityExistsException("Пользователь с таким email уже существует.");
+            }
+
+            account = new Account();
+            account.setRole(Account.Role.USER);
+            account.setCreateTime(new Date());
+        }
+        else
+        {
+            account = getAccountById(accountDto.getId());
+            if (!StringUtils.equals(account.getEmail(), accountDto.getEmail()) && accountRepository.existsByEmail(accountDto.getEmail())) {
+                throw new EntityExistsException("Пользователь с таким email уже существует.");
+            }
+        }
+
         account.setEmail(accountDto.getEmail());
         account.setPassword(accountDto.getEncodedPassword());
         if (StringUtils.isNotEmpty(accountDto.getRole())) {

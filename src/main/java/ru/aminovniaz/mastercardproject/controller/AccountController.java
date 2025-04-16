@@ -37,11 +37,11 @@ public class AccountController {
         return accountService.getAccount(id);
     }
 
-    @RequestMapping(value = "account/{id}", method = RequestMethod.POST)
-    @Operation(summary = "Изменение аккаунта", description = "Изменение данных аккаунта по идентификатору")
-    public void updateAccount(@PathVariable Long id, @RequestBody @Valid AccountDto accountDto) {
+    @RequestMapping(value = "account", method = RequestMethod.POST)
+    @Operation(summary = "Изменение или создание аккаунта", description = "Изменение данных или создание нового аккаунта")
+    public void createOrUpdateAccount(@RequestBody @Valid AccountDto accountDto) {
         accountDto.setEncodedPassword(passwordEncoder.encode(accountDto.getPassword()));
-        accountService.updateAccount(id, accountDto);
+        accountService.createOrUpdateAccount(accountDto);
     }
 
     @RequestMapping(value = "account/{id}", method = RequestMethod.DELETE)

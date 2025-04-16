@@ -21,7 +21,7 @@ public interface AccountService {
 
     UserDetailsService userDetailsService();
 
-    void updateAccount(Long id, AccountDto accountDto);
+    void createOrUpdateAccount(AccountDto accountDto);
 
     void deleteAccount(Long id);
 }

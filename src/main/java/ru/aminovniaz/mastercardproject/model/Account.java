@@ -7,8 +7,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "ACCOUNT")
-@Getter
-@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,7 +18,7 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "EMAIL", nullable = false, length = 128)
+    @Column(name = "EMAIL", nullable = false, length = 36)
     private String email;
 
     @Column(name = "PASSWORD", nullable = false)

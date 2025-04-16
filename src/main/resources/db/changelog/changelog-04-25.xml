@@ -29,4 +29,31 @@
                              tableName="ACCOUNT"/>
     </changeSet>
 
+    <changeSet id="15.1940" author="naminov">
+        <createTable tableName="CARD">
+            <column name="CARD_ID" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="NUMBER" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ACCOUNT_ID" type="bigint">
+                <constraints references="ACCOUNT(ACCOUNT_ID)"
+                             foreignKeyName="Card_Account"/>
+            </column>
+            <column name="ACTIVE_DAYS" type="int"/>
+            <column name="STATUS" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BALANCE" type="float"/>
+            <column name="CREATE_TIME" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CHANGE_TIME" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FINISH_TIME" type="timestamp"/>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>

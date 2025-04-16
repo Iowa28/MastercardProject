@@ -33,7 +33,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .password(passwordEncoder.encode(accountDto.getPassword()))
                 .role(Account.Role.USER)
                 .createTime(new Date())
-                .changeTime(new Date())
                 .build();
 
         accountService.saveAccount(account);
