@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.method.MethodValidationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.aminovniaz.mastercardproject.dto.ErrorMessage;
@@ -34,7 +35,12 @@ public class ExceptionController {
                 .body(new ErrorMessage("Данные авторизации введены неверно."));
     }
 
-    @ExceptionHandler({ConstraintViolationException.class, MethodValidationException.class, MethodArgumentNotValidException.class})
+    @ExceptionHandler({
+            ConstraintViolationException.class,
+            MethodValidationException.class,
+            MethodArgumentNotValidException.class,
+            MissingServletRequestParameterException.class
+    })
     public ResponseEntity<ErrorMessage> validationException(Exception exception) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)

@@ -1,5 +1,6 @@
 package ru.aminovniaz.mastercardproject.model;
 
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -7,9 +8,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
+@Getter
 public class AccountDetails implements UserDetails {
 
-    private Account account;
+    private final Account account;
 
     public AccountDetails(Account account) {
         this.account = account;
@@ -49,9 +51,5 @@ public class AccountDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    public Account getAccount() {
-        return account;
     }
 }

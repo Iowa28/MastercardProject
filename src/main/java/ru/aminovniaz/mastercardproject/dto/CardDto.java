@@ -11,6 +11,7 @@ import java.util.Date;
 
 @Data
 @Builder
+@Schema(description = "Карта")
 public class CardDto {
 
     @Schema(description = "Идентификатор")

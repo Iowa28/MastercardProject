@@ -1,16 +1,23 @@
 package ru.aminovniaz.mastercardproject.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.aminovniaz.mastercardproject.dao.CardDao;
 import ru.aminovniaz.mastercardproject.dto.CardDto;
+import ru.aminovniaz.mastercardproject.dto.CardFilter;
 import ru.aminovniaz.mastercardproject.exception.NotFoundException;
 import ru.aminovniaz.mastercardproject.mapper.CardMapper;
 import ru.aminovniaz.mastercardproject.model.Account;
+import ru.aminovniaz.mastercardproject.model.AccountDetails;
 import ru.aminovniaz.mastercardproject.model.Card;
 import ru.aminovniaz.mastercardproject.repository.CardRepository;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -27,6 +34,9 @@ public class CardServiceImpl implements CardService {
 
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private CardDao cardDao;
 
     @Override
     public void createOrUpdateCard(CardDto cardDto) {
@@ -78,6 +88,39 @@ public class CardServiceImpl implements CardService {
         Card card = getCardById(cardId);
         card.setStatus(Card.Status.ACTIVE);
         cardRepository.save(card);
+    }
+
+    @Override
+    public List<CardDto> getAllCards(CardFilter filter) {
+        List<Card> cards = cardDao.getCards(filter);
+        return cardMapper.cardsToCardDtos(cards);
+    }
+
+    @Override
+    public void blockUserCard(Long cardId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        AccountDetails accountDetails = (AccountDetails) authentication.getPrincipal();
+        Account account = accountDetails.getAccount();
+
+        Card card = getCardById(cardId);
+        //if (!card.getOwner().getId().equals(account.getId()) && account.getRole() == Account.Role.USER) {
+        if (!card.getOwner().getId().equals(account.getId())) {
+            throw new AccessDeniedException("Вы не являетесь владельцем карты.");
+        }
+
+        card.setStatus(Card.Status.BLOCKED);
+        cardRepository.save(card);
+    }
+
+    @Override
+    public List<CardDto> getUserCards(CardFilter filter) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        AccountDetails accountDetails = (AccountDetails) authentication.getPrincipal();
+        Account account = accountDetails.getAccount();
+        filter.setOwnerId(account.getId());
+
+        List<Card> cards = cardDao.getCards(filter);
+        return cardMapper.cardsToCardDtos(cards);
     }
 
     private Card getCardById(Long cardId) {

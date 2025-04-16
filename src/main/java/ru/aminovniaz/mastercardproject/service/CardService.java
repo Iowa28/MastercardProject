@@ -1,6 +1,9 @@
 package ru.aminovniaz.mastercardproject.service;
 
 import ru.aminovniaz.mastercardproject.dto.CardDto;
+import ru.aminovniaz.mastercardproject.dto.CardFilter;
+
+import java.util.List;
 
 public interface CardService {
 
@@ -11,4 +14,10 @@ public interface CardService {
     void blockCard(Long cardId);
 
     void activateCard(Long cardId);
+
+    List<CardDto> getAllCards(CardFilter filter);
+
+    void blockUserCard(Long cardId);
+
+    List<CardDto> getUserCards(CardFilter filter);
 }
