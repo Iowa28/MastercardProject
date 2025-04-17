@@ -26,4 +26,6 @@ public interface AccountService {
     void createOrUpdateAccount(AccountDto accountDto);
 
     void deleteAccount(Long id);
+
+    Account getCurentAccount();
 }

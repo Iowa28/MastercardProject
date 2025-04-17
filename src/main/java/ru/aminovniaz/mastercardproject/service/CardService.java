@@ -24,4 +24,8 @@ public interface CardService {
     void blockUserCard(Long cardId);
 
     List<CardDto> getUserCards(CardFilter filter);
+
+    void withdrawMoney(Long cardId, Float amount);
+
+    void transferMoney(Long fromCardId, Long toCardId, Float amount);
 }

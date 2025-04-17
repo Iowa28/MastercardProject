@@ -3,6 +3,7 @@ package ru.aminovniaz.mastercardproject.exception;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.method.MethodValidationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -21,8 +22,8 @@ public class ExceptionController {
                 .body(new ErrorMessage(exception.getMessage()));
     }
 
-    @ExceptionHandler(EntityExistsException.class)
-    public ResponseEntity<ErrorMessage> entityExistsException(EntityExistsException exception) {
+    @ExceptionHandler({EntityExistsException.class, IllegalArgumentException.class, IllegalStateException.class})
+    public ResponseEntity<ErrorMessage> badRequestException(Exception exception) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorMessage(exception.getMessage()));
@@ -44,6 +45,13 @@ public class ExceptionController {
     public ResponseEntity<ErrorMessage> validationException(Exception exception) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorMessage(exception.getMessage()));
+    }
+
+    @ExceptionHandler({AccessDeniedException.class})
+    public ResponseEntity<ErrorMessage> accessDeniedException(Exception exception) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
                 .body(new ErrorMessage(exception.getMessage()));
     }
 }

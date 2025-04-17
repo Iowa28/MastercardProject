@@ -2,10 +2,9 @@ package ru.aminovniaz.mastercardproject.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.aminovniaz.mastercardproject.dao.CardDao;
 import ru.aminovniaz.mastercardproject.dto.CardDto;
 import ru.aminovniaz.mastercardproject.dto.CardFilter;
@@ -13,10 +12,9 @@ import ru.aminovniaz.mastercardproject.exception.EntityExistsException;
 import ru.aminovniaz.mastercardproject.exception.NotFoundException;
 import ru.aminovniaz.mastercardproject.mapper.CardMapper;
 import ru.aminovniaz.mastercardproject.model.Account;
+import ru.aminovniaz.mastercardproject.model.Card;
 import ru.aminovniaz.mastercardproject.model.CardLimit;
 import ru.aminovniaz.mastercardproject.repository.CardLimitRepository;
-import ru.aminovniaz.mastercardproject.security.AccountDetails;
-import ru.aminovniaz.mastercardproject.model.Card;
 import ru.aminovniaz.mastercardproject.repository.CardRepository;
 
 import java.util.Date;
@@ -40,6 +38,7 @@ public class CardServiceImpl implements CardService {
 
     @Autowired
     private CardDao cardDao;
+
     @Autowired
     private CardLimitRepository cardLimitRepository;
 
@@ -128,9 +127,7 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public void blockUserCard(Long cardId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        AccountDetails accountDetails = (AccountDetails) authentication.getPrincipal();
-        Account account = accountDetails.getAccount();
+        Account account = accountService.getCurentAccount();
 
         Card card = getCardById(cardId);
         if (!card.getOwner().getId().equals(account.getId())) {
@@ -143,13 +140,83 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public List<CardDto> getUserCards(CardFilter filter) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        AccountDetails accountDetails = (AccountDetails) authentication.getPrincipal();
-        Account account = accountDetails.getAccount();
+        Account account = accountService.getCurentAccount();
         filter.setOwnerId(account.getId());
 
         List<Card> cards = cardDao.getCards(filter);
         return cardMapper.cardsToCardDtos(cards);
+    }
+
+    @Transactional
+    @Override
+    public void withdrawMoney(Long cardId, Float amount) {
+        Account account = accountService.getCurentAccount();
+
+        Card card = getCardById(cardId);
+        if (!card.getOwner().getId().equals(account.getId())) {
+            throw new AccessDeniedException("Вы не являетесь владельцем карты.");
+        }
+
+        if (card.getBalance().compareTo(amount) < 0) {
+            throw new IllegalArgumentException("Недостаточно средств для списания.");
+        }
+
+        if (card.getStatus() != Card.Status.ACTIVE) {
+            throw new IllegalStateException("Необходимо активировать карту.");
+        }
+
+        List<CardLimit> limits = cardLimitRepository.findByCardIdAndFinishTimeIsNull(cardId);
+        for (CardLimit limit : limits) {
+            if (limit.getRemnant().compareTo(amount) < 0) {
+                throw new IllegalStateException("Превышен лимит списания средств.");
+            }
+            limit.setRemnant(limit.getRemnant() - amount);
+            cardLimitRepository.save(limit);
+        }
+
+        card.setBalance(card.getBalance() - amount);
+        cardRepository.save(card);
+    }
+
+    @Transactional
+    @Override
+    public void transferMoney(Long fromCardId, Long toCardId, Float amount) {
+        Account account = accountService.getCurentAccount();
+
+        Card fromCard = getCardById(fromCardId);
+        if (!fromCard.getOwner().getId().equals(account.getId())) {
+            throw new AccessDeniedException(String.format("Вы не являетесь владельцем карты %s.", fromCardId));
+        }
+
+        Card toCard = getCardById(toCardId);
+        if (!toCard.getOwner().getId().equals(account.getId())) {
+            throw new AccessDeniedException(String.format("Вы не являетесь владельцем карты %s.", toCardId));
+        }
+
+        if (fromCard.getStatus() != Card.Status.ACTIVE) {
+            throw new IllegalStateException(String.format("Необходимо активировать карту %s.", fromCardId));
+        }
+        if (toCard.getStatus() != Card.Status.ACTIVE) {
+            throw new IllegalStateException(String.format("Необходимо активировать карту %s.", toCardId));
+        }
+
+        if (fromCard.getBalance().compareTo(amount) < 0) {
+            throw new IllegalArgumentException("Недостаточно средств для перевода.");
+        }
+
+        List<CardLimit> limits = cardLimitRepository.findByCardIdAndFinishTimeIsNull(fromCardId);
+        for (CardLimit limit : limits) {
+            if (limit.getRemnant().compareTo(amount) < 0) {
+                throw new IllegalStateException("Превышен лимит перевода средств.");
+            }
+            limit.setRemnant(limit.getRemnant() - amount);
+            cardLimitRepository.save(limit);
+        }
+
+        fromCard.setBalance(fromCard.getBalance() - amount);
+        cardRepository.save(fromCard);
+        toCard.setBalance(toCard.getBalance() + amount);
+        cardRepository.save(toCard);
     }
 
     private Card getCardById(Long cardId) {

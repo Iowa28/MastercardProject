@@ -2,6 +2,8 @@ package ru.aminovniaz.mastercardproject.service;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import ru.aminovniaz.mastercardproject.dto.AccountDto;
@@ -100,5 +102,12 @@ public class AccountServiceImpl implements AccountService {
         Account account = getAccountById(id);
         account.setFinishTime(new Date());
         accountRepository.save(account);
+    }
+
+    @Override
+    public Account getCurentAccount() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        AccountDetails accountDetails = (AccountDetails) authentication.getPrincipal();
+        return accountDetails.getAccount();
     }
 }

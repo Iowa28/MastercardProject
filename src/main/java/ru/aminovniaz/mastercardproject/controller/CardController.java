@@ -69,13 +69,13 @@ public class CardController {
     }
 
     @RequestMapping(value = "admin/card/{id}/limit", method = RequestMethod.POST)
-    @Operation(summary = "Установка лимита", description = "Установка лимита на снятие средств с карты")
+    @Operation(summary = "Установка лимита", description = "Установка лимита на совершение операций с картой")
     public void addLimit(@PathVariable Long id, @RequestParam String type, @RequestParam Float limit) {
         cardService.addLimit(id, type, limit);
     }
 
     @RequestMapping(value = "admin/card/{id}/limit", method = RequestMethod.DELETE)
-    @Operation(summary = "Отмена лимита", description = "Отмена лимита на снятие средств с карты")
+    @Operation(summary = "Отмена лимита", description = "Отмена лимита на совершение операций с картой")
     public void deleteLimit(@PathVariable Long id, @RequestParam String type) {
         cardService.deleteLimit(id, type);
     }
@@ -102,5 +102,17 @@ public class CardController {
                 .build();
 
         return cardService.getUserCards(filter);
+    }
+
+    @RequestMapping(value = "card/{id}/withdraw", method = RequestMethod.POST)
+    @Operation(summary = "Списание средств", description = "Списание средств с карты")
+    public void withdrawMoney(@PathVariable Long id, @RequestParam Float amount) {
+        cardService.withdrawMoney(id, amount);
+    }
+
+    @RequestMapping(value = "cards/transfer", method = RequestMethod.POST)
+    @Operation(summary = "Перевод средств", description = "Перевод средств между картами")
+    public void transferMoney(@RequestParam Long fromCardId, @RequestParam Long toCardId, @RequestParam Float amount) {
+        cardService.transferMoney(fromCardId, toCardId, amount);
     }
 }
