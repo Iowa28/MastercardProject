@@ -12,9 +12,6 @@ public class CardTransactionDto {
     @Schema(description = "Идентификатор")
     private Long id;
 
-//    @Schema(description = "Карта")
-//    private CardDto card;
-
     @Schema(description = "Операция")
     private String operation;
 

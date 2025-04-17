@@ -99,4 +99,14 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="17.1401" author="naminov">
+        <insert tableName="ACCOUNT">
+            <column name="EMAIL" value="admin@mail.com"/>
+            <column name="PASSWORD" value="$2a$10$IhwlHVRISZqx8A6NpMNGVePTWGP1/XuFC4hff1tdaWdLCZ5wN7CLa"/>
+            <column name="ROLE" value="ADMIN"/>
+            <column name="CREATE_TIME" value="now()"/>
+            <column name="CHANGE_TIME" value="now()"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
