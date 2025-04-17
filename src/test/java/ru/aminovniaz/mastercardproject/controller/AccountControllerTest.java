@@ -65,7 +65,7 @@ public class AccountControllerTest {
     @Test
     @Order(2)
     public void delete_account() throws Exception {
-        mockMvc.perform(delete("/admin/account/14"))
+        mockMvc.perform(delete("/admin/account/2"))
                 .andExpect(status().isOk());
     }
 }
