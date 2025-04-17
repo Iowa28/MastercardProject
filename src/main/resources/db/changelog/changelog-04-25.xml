@@ -80,4 +80,23 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="17.1041" author="naminov">
+        <createTable tableName="CARD_TRANSACTION">
+            <column name="CARD_TRANSACTION_ID" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="CARD_ID" type="bigint">
+                <constraints references="CARD(CARD_ID)"
+                             foreignKeyName="CardTransaction_Card"/>
+            </column>
+            <column name="OPERATION" type="varchar(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="AMOUNT" type="float"/>
+            <column name="CREATE_TIME" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>

@@ -9,8 +9,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.aminovniaz.mastercardproject.dto.CardDto;
-import ru.aminovniaz.mastercardproject.dto.CardFilter;
+import ru.aminovniaz.mastercardproject.dto.*;
 import ru.aminovniaz.mastercardproject.service.CardService;
 
 import java.util.List;
@@ -51,10 +50,10 @@ public class CardController {
     }
 
     @RequestMapping(value = "admin/cards/all", method = RequestMethod.GET)
-    @Operation(summary = "Список всех карт", description = "Получение списка всех карт")
-    public List<CardDto> getAllCards(
+    @Operation(summary = "Список всех карт", description = "Получение списка всех карт с транзакциями")
+    public List<CardWithTransactionDto> getAllCards(
             @RequestParam @Min(value = 1, message = "Номер страницы начинается с 1") Integer page,
-            @RequestParam @Min(value = 0, message = "Количество страниц не может быть меньше 0") Integer size,
+            @RequestParam @Min(value = 0, message = "Количество элементов не может быть меньше 0") Integer size,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) Float minBalance
     ) {
@@ -90,7 +89,7 @@ public class CardController {
     @Operation(summary = "Список карт", description = "Получение списка карт пользователя")
     public List<CardDto> getUserCards(
             @RequestParam @Positive(message = "Номер страницы начинается с 1") Integer page,
-            @RequestParam @PositiveOrZero(message = "Количество страниц не может быть меньше 0") Integer size,
+            @RequestParam @PositiveOrZero(message = "Количество элементов не может быть меньше 0") Integer size,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) Float minBalance
     ) {
@@ -114,5 +113,31 @@ public class CardController {
     @Operation(summary = "Перевод средств", description = "Перевод средств между картами")
     public void transferMoney(@RequestParam Long fromCardId, @RequestParam Long toCardId, @RequestParam Float amount) {
         cardService.transferMoney(fromCardId, toCardId, amount);
+    }
+
+    @RequestMapping(value = "admin/card/{id}/add", method = RequestMethod.POST)
+    @Operation(summary = "Пополнение средств", description = "Пополнение средств карты")
+    public void addMoney(@PathVariable Long id, @RequestParam Float amount) {
+        cardService.addMoney(id, amount);
+    }
+
+    @RequestMapping(value = "card/{id}/transactions", method = RequestMethod.GET)
+    @Operation(summary = "Список транзакций", description = "Получение списка транзакцмй карты")
+    public List<CardTransactionDto> getCardTransactions(
+            @PathVariable Long id,
+            @RequestParam @Positive(message = "Номер страницы начинается с 1") Integer page,
+            @RequestParam @PositiveOrZero(message = "Количество элементов не может быть меньше 0") Integer size,
+            @RequestParam(required = false) String operation,
+            @RequestParam(required = false) Float minAmount
+    ) {
+        TransactionFilter filter = TransactionFilter.builder()
+                .page(page)
+                .size(size)
+                .cardId(id)
+                .operation(operation)
+                .minAmount(minAmount)
+                .build();
+
+        return cardService.getCardTransactions(filter);
     }
 }

@@ -1,7 +1,6 @@
 package ru.aminovniaz.mastercardproject.service;
 
-import ru.aminovniaz.mastercardproject.dto.CardDto;
-import ru.aminovniaz.mastercardproject.dto.CardFilter;
+import ru.aminovniaz.mastercardproject.dto.*;
 
 import java.util.List;
 
@@ -15,7 +14,7 @@ public interface CardService {
 
     void activateCard(Long cardId);
 
-    List<CardDto> getAllCards(CardFilter filter);
+    List<CardWithTransactionDto> getAllCards(CardFilter filter);
 
     void addLimit(Long cardId, String type, Float limit);
 
@@ -28,4 +27,8 @@ public interface CardService {
     void withdrawMoney(Long cardId, Float amount);
 
     void transferMoney(Long fromCardId, Long toCardId, Float amount);
+
+    void addMoney(Long cardId, Float amount);
+
+    List<CardTransactionDto> getCardTransactions(TransactionFilter filter);
 }

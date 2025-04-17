@@ -6,16 +6,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.aminovniaz.mastercardproject.dao.CardDao;
-import ru.aminovniaz.mastercardproject.dto.CardDto;
-import ru.aminovniaz.mastercardproject.dto.CardFilter;
+import ru.aminovniaz.mastercardproject.dto.*;
 import ru.aminovniaz.mastercardproject.exception.EntityExistsException;
 import ru.aminovniaz.mastercardproject.exception.NotFoundException;
 import ru.aminovniaz.mastercardproject.mapper.CardMapper;
 import ru.aminovniaz.mastercardproject.model.Account;
 import ru.aminovniaz.mastercardproject.model.Card;
 import ru.aminovniaz.mastercardproject.model.CardLimit;
+import ru.aminovniaz.mastercardproject.model.CardTransaction;
 import ru.aminovniaz.mastercardproject.repository.CardLimitRepository;
 import ru.aminovniaz.mastercardproject.repository.CardRepository;
+import ru.aminovniaz.mastercardproject.repository.CardTransactionRepository;
 
 import java.util.Date;
 import java.util.List;
@@ -41,6 +42,9 @@ public class CardServiceImpl implements CardService {
 
     @Autowired
     private CardLimitRepository cardLimitRepository;
+
+    @Autowired
+    private CardTransactionRepository cardTransactionRepository;
 
     @Override
     public void createOrUpdateCard(CardDto cardDto) {
@@ -95,9 +99,9 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public List<CardDto> getAllCards(CardFilter filter) {
+    public List<CardWithTransactionDto> getAllCards(CardFilter filter) {
         List<Card> cards = cardDao.getCards(filter);
-        return cardMapper.cardsToCardDtos(cards);
+        return cardMapper.cardsToCardWithTransactionDtos(cards);
     }
 
     @Override
@@ -156,11 +160,9 @@ public class CardServiceImpl implements CardService {
         if (!card.getOwner().getId().equals(account.getId())) {
             throw new AccessDeniedException("Вы не являетесь владельцем карты.");
         }
-
         if (card.getBalance().compareTo(amount) < 0) {
             throw new IllegalArgumentException("Недостаточно средств для списания.");
         }
-
         if (card.getStatus() != Card.Status.ACTIVE) {
             throw new IllegalStateException("Необходимо активировать карту.");
         }
@@ -176,6 +178,14 @@ public class CardServiceImpl implements CardService {
 
         card.setBalance(card.getBalance() - amount);
         cardRepository.save(card);
+
+        CardTransaction transaction = CardTransaction.builder()
+                .card(card)
+                .operation(CardTransaction.Operation.WITHDRAW)
+                .amount(amount)
+                .createTime(new Date())
+                .build();
+        cardTransactionRepository.save(transaction);
     }
 
     @Transactional
@@ -187,19 +197,16 @@ public class CardServiceImpl implements CardService {
         if (!fromCard.getOwner().getId().equals(account.getId())) {
             throw new AccessDeniedException(String.format("Вы не являетесь владельцем карты %s.", fromCardId));
         }
-
         Card toCard = getCardById(toCardId);
         if (!toCard.getOwner().getId().equals(account.getId())) {
             throw new AccessDeniedException(String.format("Вы не являетесь владельцем карты %s.", toCardId));
         }
-
         if (fromCard.getStatus() != Card.Status.ACTIVE) {
             throw new IllegalStateException(String.format("Необходимо активировать карту %s.", fromCardId));
         }
         if (toCard.getStatus() != Card.Status.ACTIVE) {
             throw new IllegalStateException(String.format("Необходимо активировать карту %s.", toCardId));
         }
-
         if (fromCard.getBalance().compareTo(amount) < 0) {
             throw new IllegalArgumentException("Недостаточно средств для перевода.");
         }
@@ -217,6 +224,46 @@ public class CardServiceImpl implements CardService {
         cardRepository.save(fromCard);
         toCard.setBalance(toCard.getBalance() + amount);
         cardRepository.save(toCard);
+
+        CardTransaction fromCardTransaction = CardTransaction.builder()
+                .card(fromCard)
+                .operation(CardTransaction.Operation.TRANSFER)
+                .amount(amount)
+                .createTime(new Date())
+                .build();
+        cardTransactionRepository.save(fromCardTransaction);
+        CardTransaction toCardTransaction = CardTransaction.builder()
+                .card(toCard)
+                .operation(CardTransaction.Operation.REPLENISH)
+                .amount(amount)
+                .createTime(new Date())
+                .build();
+        cardTransactionRepository.save(toCardTransaction);
+    }
+
+    @Override
+    public void addMoney(Long cardId, Float amount) {
+        Card card = getCardById(cardId);
+        if (card.getStatus() != Card.Status.ACTIVE) {
+            throw new IllegalStateException("Необходимо активировать карту.");
+        }
+
+        card.setBalance(card.getBalance() + amount);
+        cardRepository.save(card);
+
+        CardTransaction transaction = CardTransaction.builder()
+                .card(card)
+                .operation(CardTransaction.Operation.REPLENISH)
+                .amount(amount)
+                .createTime(new Date())
+                .build();
+        cardTransactionRepository.save(transaction);
+    }
+
+    @Override
+    public List<CardTransactionDto> getCardTransactions(TransactionFilter filter) {
+        List<CardTransaction> cardTransactions = cardDao.getCardTransactions(filter);
+        return cardMapper.cardTransactionsToCardTransactionDtos(cardTransactions);
     }
 
     private Card getCardById(Long cardId) {

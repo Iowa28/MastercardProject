@@ -5,8 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "CARD")
@@ -37,6 +41,10 @@ public class Card {
 
     @Column(name = "BALANCE")
     private Float balance;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "card")
+    @Cascade(CascadeType.ALL)
+    private List<CardTransaction> transactions = new ArrayList<>();
 
     @Column(name = "CREATE_TIME", nullable = false)
     private Date createTime;
