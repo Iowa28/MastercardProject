@@ -1,31 +1,30 @@
 package ru.aminovniaz.mastercardproject.service;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import ru.aminovniaz.mastercardproject.dto.AccountDto;
-import ru.aminovniaz.mastercardproject.mapper.AccountMapper;
 import ru.aminovniaz.mastercardproject.exception.EntityExistsException;
 import ru.aminovniaz.mastercardproject.exception.NotFoundException;
+import ru.aminovniaz.mastercardproject.mapper.AccountMapper;
 import ru.aminovniaz.mastercardproject.model.Account;
-import ru.aminovniaz.mastercardproject.security.AccountDetails;
 import ru.aminovniaz.mastercardproject.repository.AccountRepository;
+import ru.aminovniaz.mastercardproject.security.AccountDetails;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+@RequiredArgsConstructor
 @Service
 public class AccountServiceImpl implements AccountService {
 
-    @Autowired
-    private AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
 
-    @Autowired
-    private AccountMapper accountMapper;
+    private final AccountMapper accountMapper;
 
     @Override
     public List<AccountDto> getAccounts() {

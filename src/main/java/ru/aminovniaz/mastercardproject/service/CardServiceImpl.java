@@ -1,6 +1,6 @@
 package ru.aminovniaz.mastercardproject.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,29 +22,23 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+@RequiredArgsConstructor
 @Service
 public class CardServiceImpl implements CardService {
 
-    @Autowired
-    private CardRepository cardRepository;
+    private final CardRepository cardRepository;
 
-    @Autowired
-    private CardMapper cardMapper;
+    private final CardMapper cardMapper;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private AccountService accountService;
+    private final AccountService accountService;
 
-    @Autowired
-    private CardDao cardDao;
+    private final CardDao cardDao;
 
-    @Autowired
-    private CardLimitRepository cardLimitRepository;
+    private final CardLimitRepository cardLimitRepository;
 
-    @Autowired
-    private CardTransactionRepository cardTransactionRepository;
+    private final CardTransactionRepository cardTransactionRepository;
 
     @Override
     public void createOrUpdateCard(CardDto cardDto) {
